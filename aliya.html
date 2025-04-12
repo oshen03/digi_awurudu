@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aliyata Asa Thabima</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<style>
+    /* Ensure the body takes full height */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* The game container holds the elephant image */
+.game-container {
+  max-width: 600px;   /* Adjust as needed */
+  height: 400px;      /* Adjust as needed */
+  border: 2px solid #ccc;
+  background: white;
+  overflow: hidden;
+  position: relative;
+}
+
+/* The moving dot */
+#dot {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  border-radius: 50%;
+  top: 0;
+  left: 0;
+}
+
+/* Optional: a simple animation style for smoother movement */
+
+</style>
+
+<body class="bg-light">
+
+  <div class="container my-4">
+    <h1 class="text-center">Aliyata Asa Thabima</h1>
+    <p class="text-center">Click the button when the moving dot is at the elephant’s eye.</p>
+  </div>
+
+  <!-- Game Container -->
+  <div class="game-container mx-auto position-relative">
+    <!-- Elephant drawing -->
+    <img src="assets/aliya.jpg" alt="Elephant" class="img-fluid w-100">
+    <!-- Moving Dot -->
+    <div id="dot"></div>
+  </div>
+
+  <!-- Button -->
+  <div class="container text-center my-4">
+    <button id="checkBtn" class="btn btn-primary btn-lg">Fix Eye</button>
+  </div>
+
+  <!-- Bootstrap JS (optional, for some Bootstrap components) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Game Script -->
+  <script>
+// script.js
+
+// Configuration
+const target = { x: 250, y: 150 }; // target coordinate for the elephant's eye (adjust to match your image)
+const threshold = 15;              // distance (in pixels) for a perfect hit (10 marks)
+const container = document.querySelector('.game-container');
+const dot = document.getElementById('dot');
+const checkBtn = document.getElementById('checkBtn');
+
+// Variables for animation
+let pos = { x: 0, y: 0 };
+let velocity = { x: 2, y: 1.5 }; // pixels per frame; adjust for desired speed
+
+// Get container dimensions
+function getContainerDimensions() {
+  return container.getBoundingClientRect();
+}
+
+// Animate the dot within the container (bouncing off the edges)
+function animateDot() {
+  const rect = getContainerDimensions();
+  const containerWidth = rect.width;
+  const containerHeight = rect.height;
+
+  // Update position
+  pos.x += velocity.x;
+  pos.y += velocity.y;
+
+  // Bounce on left/right
+  if (pos.x <= 0 || pos.x >= containerWidth - dot.offsetWidth) {
+    velocity.x *= -1;
+  }
+
+  // Bounce on top/bottom
+  if (pos.y <= 0 || pos.y >= containerHeight - dot.offsetHeight) {
+    velocity.y *= -1;
+  }
+
+  // Set new position
+  dot.style.left = pos.x + 'px';
+  dot.style.top = pos.y + 'px';
+
+  requestAnimationFrame(animateDot);
+}
+
+// Start the animation
+animateDot();
+
+// Calculate Euclidean distance between two points
+function calculateDistance(p1, p2) {
+  return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+}
+
+// When user clicks the button, check the dot position
+checkBtn.addEventListener('click', () => {
+  // Get the current position of the dot (approximate, from style)
+  const dotRect = dot.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+  // Calculate the dot's center coordinates relative to the container
+  const dotPos = {
+    x: dotRect.left - containerRect.left + dotRect.width / 2,
+    y: dotRect.top - containerRect.top + dotRect.height / 2
+  };
+
+  // Calculate distance from the target eye position
+  const distance = calculateDistance(dotPos, target);
+
+  // Determine marks: if within threshold, award 10 marks (win)
+  if (distance <= threshold) {
+    alert("Congratulations! Perfect! (10 marks) You have fixed the elephant's eye!");
+  } else {
+    // For simplicity, we convert the error distance to marks (1-9)
+    // The further away, the higher the mark value (but less than 10).
+    // Here we clamp the value between 1 and 9.
+    let marks = Math.ceil((distance / threshold));
+    if (marks > 9) marks = 9;
+    alert("Nearly missed! You got " + marks + " marks. Try again!");
+  }
+});
+
+
+  </script>
+</body>
+</html>

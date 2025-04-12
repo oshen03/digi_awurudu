@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DIGI Awurudu</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: url('assets/background-01.svg') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    .scene {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .floating,
+    .vibrate,
+    .move-left,
+    .sway,
+    .sun-move {
+      position: absolute;
+    }
+
+    .move-left-fast {
+      animation: moveLeft 40s linear infinite;
+    }
+
+    .move-left-slow {
+      animation: moveLeft 70s linear infinite;
+    }
+
+    .headline-floating {
+      animation: floatY 1s ease-in-out infinite alternate;
+    }
+
+
+    .floating {
+      animation: floatY 3s ease-in-out infinite alternate;
+    }
+
+    .vibrate {
+      animation: vibrate 0.3s infinite alternate;
+    }
+
+    .sway {
+      animation: sway 2s ease-in-out infinite alternate;
+    }
+
+    .sun-move {
+      animation: sunMove 10s linear infinite;
+    }
+
+    @keyframes moveLeft {
+      0% {
+        transform: translateX(100vw);
+      }
+
+      100% {
+        transform: translateX(-100vw);
+      }
+    }
+
+    @keyframes floatY {
+      0% {
+        transform: translateY(0px);
+      }
+
+      100% {
+        transform: translateY(10px);
+      }
+    }
+
+    @keyframes vibrate {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(2deg);
+      }
+    }
+
+    @keyframes sway {
+      0% {
+        transform: rotate(-1deg);
+      }
+
+      100% {
+        transform: rotate(1deg);
+      }
+    }
+
+    @keyframes sunMove {
+      0% {
+        top: 30%;
+        left: 10%;
+      }
+
+      100% {
+        top: 10%;
+        left: 80%;
+      }
+    }
+
+    .btn-container {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .btn-container .btn {
+      margin: 0 5px;
+    }
+
+    svg {
+      width: auto;
+      height: auto;
+    }
+  </style>
+</head>
+  <body>
+    <div class="scene">
+
+      <!-- Headline -->
+      <img src="assets/headline.svg" class="floating" style="width: 50%; left: 25%; transform: translateX(-50%);" />
+
+      <!-- Clouds -->
+      <img src="assets/cloud1.svg" class="move-left-fast" style="top:10%; width: 25%;" />
+      <img src="assets/cloud2.svg" class="move-left-slow z-index: 3" style="top:12%; width: 33%;" />
+      <img src="assets/cloud3.svg" class="move-left-fast" style="top:15%; width: 28%;" />
+
+      <!-- Sun -->
+      <img src="assets/sun.svg" class="sun-move" style="width: 22%; z-index: 2;" />
+
+      <!-- Pisces -->
+      <img src="assets/pisces.svg" class="floating" style="top: 10%; left: 5%; width: 15%; z-index: 1;" />
+
+      <!-- Aries -->
+      <img src="assets/aries.svg" class="floating" style="top: 10%; right: 5%; width: 15%; z-index: 1;" />
+
+      <!-- Tree with crow -->
+      <img src="assets/tree-branch_with_bird.svg" class="sway"
+        style="bottom: 20%; left: 60%; width: 50%; transform: translateX(-50%); z-index: 4;" />
+
+      <!-- Rabana -->
+      <img src="assets/rabana.svg" class="vibrate" style="bottom: 10%; left: 70%; width: 30%;" />
+
+      <!-- Buttons -->
+      <div class="btn-container text-left" style="left: 12%; bottom: 10%;">
+        <button class="btn btn-warning">Kana Mutti Bideema</button><br><br>
+        <button class="btn btn-danger">Lissana gahe nagima</button><br><br>
+        <button class="btn btn-success">Kata Gasima</button>
+      </div>
+
+    </div>
+
+  </body>
+
+</html>

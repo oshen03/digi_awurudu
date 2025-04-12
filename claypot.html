@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kana Mutti Bideema</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f5f5dc;
+      overflow: hidden;
+    }
+
+    .game-title {
+      font-size: 24px;
+      margin-bottom: 30px;
+      color: #333;
+      text-align: center;
+    }
+
+    .pots-container {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      margin-bottom: 30px;
+    }
+
+    .pot {
+      width: 100px;
+      height: 120px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s;
+      animation: oscillate 3s infinite ease-in-out;
+      pointer-events: auto;
+    }
+
+    .pot:hover {
+      transform: scale(1.05);
+    }
+
+    /* Style for the clay pot image */
+    .pot img.claypot {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* The splash image is positioned absolutely on top of the pot */
+    .pot img.splash {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Animate the splash appearance */
+    .pot img.splash.show {
+      animation: splash 0.5s forwards;
+    }
+
+    @keyframes oscillate {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-10px) rotate(2deg); }
+      50% { transform: translateY(0) rotate(0deg); }
+      75% { transform: translateY(-10px) rotate(-2deg); }
+    }
+
+    @keyframes splash {
+      0% { opacity: 0; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 300px;
+      animation: fadeIn 0.3s;
+    }
+
+    .modal h2 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .modal button {
+      background-color: #8B4513;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+
+    .modal button:hover {
+      background-color: #A0522D;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .copyright {
+      position: absolute;
+      bottom: 10px;
+      color: #666;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-title">Break the Clay Pot with the Water</div>
+
+  <div class="pots-container">
+    <!-- Each pot has a data attribute for its number -->
+    <div class="pot" data-pot="1">
+      <img src="assets/claypot.svg" alt="Clay Pot" class="claypot">
+      <img src="assets/splash.svg" alt="Splash" class="splash">
+    </div>
+    <div class="pot" data-pot="2">
+      <img src="assets/claypot.svg" alt="Clay Pot" class="claypot">
+      <img src="assets/splash.svg" alt="Splash" class="splash">
+    </div>
+    <div class="pot" data-pot="3">
+      <img src="assets/claypot.svg" alt="Clay Pot" class="claypot">
+      <img src="assets/splash.svg" alt="Splash" class="splash">
+    </div>
+  </div>
+
+  <div class="copyright">Copyright © Traitgen software solutions.</div>
+
+  <!-- Modals for win or lose messages -->
+  <div class="modal" id="winModal">
+    <div class="modal-content">
+      <h2>Congratulations!</h2>
+      <p>You broke the correct pot with the Water!</p>
+      <button onclick="resetGame()">Play Again</button>
+    </div>
+  </div>
+
+  <div class="modal" id="loseModal">
+    <div class="modal-content">
+      <h2>Oops!</h2>
+      <p>That pot was empty. Try again!</p>
+      <button onclick="resetGame()">Try Again</button>
+    </div>
+  </div>
+
+  <script>
+    let correctPot;
+    let gameActive = true;
+
+    // Set up the initial game state
+    function initGame() {
+      document.querySelectorAll('.pot').forEach(pot => {
+        // Reset the pot image to the intact clay pot
+        const claypotImg = pot.querySelector('img.claypot');
+        claypotImg.src = 'assets/claypot.svg';
+
+        // Hide the splash image
+        const splashImg = pot.querySelector('img.splash');
+        splashImg.classList.remove('show');
+        splashImg.style.opacity = 0;
+
+        // Re-enable clicks
+        pot.style.pointerEvents = 'auto';
+      });
+      // Randomly choose the pot that contains the water (correct pot)
+      correctPot = Math.floor(Math.random() * 3) + 1;
+      gameActive = true;
+    }
+
+    // Set up event listeners for the pots
+    function setupEventListeners() {
+      document.querySelectorAll('.pot').forEach(pot => {
+        pot.addEventListener('click', function () {
+          if (!gameActive) return;
+
+          const potNumber = parseInt(this.getAttribute('data-pot'));
+          // Prevent further clicks on this pot
+          this.style.pointerEvents = 'none';
+
+          // Change the pot image to the broken clay pot image
+          const claypotImg = this.querySelector('img.claypot');
+          claypotImg.src = 'assets/claypotbroken.svg';
+
+          // If this is the correct pot, animate the splash image
+          if (potNumber === correctPot) {
+            const splashImg = this.querySelector('img.splash');
+            // Use a slight delay for visual effect
+            setTimeout(() => {
+              splashImg.classList.add('show');
+            }, 200);
+          }
+
+          // After animation delay, show appropriate modal
+          setTimeout(() => {
+            if (potNumber === correctPot) {
+              document.getElementById('winModal').style.display = 'flex';
+            } else {
+              document.getElementById('loseModal').style.display = 'flex';
+            }
+          }, 800);
+
+          gameActive = false;
+        });
+      });
+    }
+
+    // Reset the game by hiding modals and re-initializing the state
+    function resetGame() {
+      document.getElementById('winModal').style.display = 'none';
+      document.getElementById('loseModal').style.display = 'none';
+      initGame();
+    }
+
+    window.onload = function () {
+      initGame();
+      setupEventListeners();
+    };
+  </script>
+</body>
+</html>
