@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,8 +14,11 @@
       justify-content: center;
       height: 100vh;
       margin: 0;
-      background-color: #f5f5dc;
+      background: url('assets/background-01.svg') no-repeat center center fixed;
+      background-size: cover;
       overflow: hidden;
+      background-color: rgba(255, 255, 255, 0.3);
+      background-blend-mode: overlay;
     }
 
     .game-title {
@@ -69,16 +73,40 @@
     }
 
     @keyframes oscillate {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      25% { transform: translateY(-10px) rotate(2deg); }
-      50% { transform: translateY(0) rotate(0deg); }
-      75% { transform: translateY(-10px) rotate(-2deg); }
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      25% {
+        transform: translateY(-10px) rotate(2deg);
+      }
+
+      50% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      75% {
+        transform: translateY(-10px) rotate(-2deg);
+      }
     }
 
     @keyframes splash {
-      0% { opacity: 0; transform: scale(0.8); }
-      50% { opacity: 1; transform: scale(1.2); }
-      100% { opacity: 1; transform: scale(1); }
+      0% {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
 
     .modal {
@@ -123,10 +151,32 @@
       background-color: #A0522D;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .floating {
+      animation: floatY 3s ease-in-out infinite alternate;
     }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes floatY {
+      0% {
+        transform: translateY(0px);
+      }
+
+      100% {
+        transform: translateY(10px);
+      }
+    }
+
 
     .copyright {
       position: absolute;
@@ -136,7 +186,11 @@
     }
   </style>
 </head>
+
 <body>
+  <!-- Headline -->
+  <img src="assets/headline.svg" class="floating" style="width: 50%; left: 25%; transform: translateX(-50%); margin-top: -20%;" />
+
   <div class="game-title">Break the Clay Pot with the Water</div>
 
   <div class="pots-container">
@@ -248,4 +302,5 @@
     };
   </script>
 </body>
+
 </html>
