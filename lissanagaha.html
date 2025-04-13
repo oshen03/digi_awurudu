@@ -2,210 +2,244 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lissana Gahe Nagima</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      background-color: #87CEEB;
-      font-family: Arial, sans-serif;
-      touch-action: manipulation;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lissana Gahe Nagima</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: url('assets/background-01.svg') no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.3);
+            background-blend-mode: overlay;
+        }
 
-    .game-container {
-      position: relative;
-      width: 100%;
-      max-width: 400px;
-      height: 80vh;
-      background-color: transparent;
-    }
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 80vh;
+            background-color: transparent;
+        }
 
-    .pole {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      height: 100%;
-      z-index: 1;
-    }
+        .pole {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 100%;
+            z-index: 1;
+        }
 
-    .pole img {
-      height: 100%;
-      width: auto;
-    }
+        .pole img {
+            height: 100%;
+            width: auto;
+            min-width: 50px;
+        }
 
-    .player {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 70px;
-      bottom: 20px;
-      z-index: 2;
-    }
+        .player {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            bottom: 20px;
+            z-index: 2;
+        }
 
-    .player img {
-      width: 100%;
-      height: auto;
-    }
+        .player img {
+            width: 100%;
+            height: auto;
+            min-height: 70px;
+        }
 
-    .climb-button {
-      margin-top: 20px;
-      padding: 20px 40px;
-      font-size: 20px;
-      background-color: #4CAF50;
-      border: none;
-      border-radius: 15px;
-      cursor: pointer;
-    }
+        .climb-button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+        }
 
-    .climb-button:active {
-      background-color: #45a049;
-    }
+        .climb-button:active {
+            background-color: #45a049;
+        }
 
-    .copyright {
-      position: absolute;
-      bottom: 10px;
-      color: #666;
-      font-size: 12px;
-    }
+        .copyright {
+            position: absolute;
+            bottom: 10px;
+            color: #666;
+            font-size: 12px;
+        }
 
-    .modal-content {
-      text-align: center;
-      background: #fff9e6;
-      border-radius: 15px;
-      padding: 30px;
-    }
+        .modal-content {
+            text-align: center;
+            background: #fff9e6;
+            border-radius: 15px;
+            padding: 30px;
+        }
 
-    .modal-content h2 {
-      color: #d2691e;
-      font-weight: bold;
-    }
+        .modal-content h2 {
+            color: #d2691e;
+            font-weight: bold;
+        }
 
-    .modal-content p {
-      font-size: 18px;
-    }
-  </style>
+        .modal-content p {
+            font-size: 18px;
+        }
+
+        @keyframes floatY {
+            0% {
+                transform: translateY(0px);
+            }
+
+            100% {
+                transform: translateY(10px);
+            }
+        }
+
+        .floating {
+            animation: floatY 3s ease-in-out infinite alternate;
+        }
+    </style>
 </head>
 
 <body>
-  <div class="container text-center">
-    <div class="game-container mx-auto">
-      <div class="pole">
-        <img src="assets/pole.svg" alt="Pole" />
-      </div>
-      <div class="player">
-        <img src="assets/climber.svg" alt="Climber" />
-      </div>
+
+    <div class="container text-center">
+        <!-- Headline -->
+        <img src="assets/headline.svg" class="floating img-fluid" style="position: absolute; top: 2%; width: 40%; transform: translateX(-50%); z-index: 0;" />
+
+        <div class="game-container mx-auto">
+            <div class="pole">
+                <img id="poleImage" src="assets/pole.svg" alt="Pole" class="img-fluid" />
+            </div>
+            <div class="player">
+                <img id="playerImage" src="assets/climber.svg" alt="Climber" class="img-fluid" />
+            </div>
+        </div>
+
+        <button class="climb-button btn btn-success mt-3" id="climbBtn">CLIMB UP</button>
     </div>
 
-    <button class="climb-button" id="climbBtn">CLIMB UP</button>
-  </div>
-
-  <!-- Modals -->
-  <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header bg-danger text-white">
-          <h5 class="modal-title" id="alertModalLabel">Oops!</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Modals -->
+    <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="alertModalLabel">Oops!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    You slid all the way down! Try again!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="resetGame()">Play Again</button>
+                </div>
+            </div>
         </div>
-        <div class="modal-body">
-          You slid all the way down! Try again!
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="resetGame()">Play Again</button>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <div class="modal fade" id="winModal" tabindex="-1" aria-labelledby="winModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <h2 class="mb-3">🎉 Congratulations! 🎉</h2>
-        <p>You reached the flag and won the game!</p>
-        <button class="btn btn-success" onclick="resetGame()" data-bs-dismiss="modal">Play Again</button>
-      </div>
+    <div class="modal fade" id="winModal" tabindex="-1" aria-labelledby="winModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <h2 class="mb-3">🎉 Congratulations! 🎉</h2>
+                <p>You reached the flag and won the game!</p>
+                <button class="btn btn-success" onclick="resetGame()" data-bs-dismiss="modal">Play Again</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="copyright">Copyright © Lotus Technologies (Private) Limited. All Rights Reserved.</div>
+    <div class="copyright text-center mt-3">Copyright © Traitgen software solutions. All Rights Reserved.</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    const player = document.querySelector('.player');
-    const climbBtn = document.getElementById('climbBtn');
-    const pole = document.querySelector('.pole img');
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const player = document.querySelector('.player');
+        const climbBtn = document.getElementById('climbBtn');
+        const poleImg = document.getElementById('poleImage');
+        const playerImg = document.getElementById('playerImage');
 
-    let gameActive = true;
-    let gravity = 0.2;
-    let climbPower = 5;
-    let playerPosition = 20;
-    let flagPositionY = 80;
-    let playerHeight = 0;
-    const updateInterval = 50;
+        let gameActive = false;
+        let gravity = 0.5;
+        let climbPower = 5;
+        let playerPosition = 20;
+        let flagPositionY = 40;
+        let playerHeight = 0;
+        let poleHeight = 0;
+        const updateInterval = 50;
 
-    // Initialize player height after image loads
-    document.querySelector('.player img').onload = function() {
-      playerHeight = player.clientHeight;
-    };
+        // Image loading handler
+        Promise.all([
+            new Promise(resolve => poleImg.complete ? resolve() : poleImg.addEventListener('load', resolve)),
+            new Promise(resolve => playerImg.complete ? resolve() : playerImg.addEventListener('load', resolve))
+        ]).then(() => {
+            // Initialize measurements after images load
+            playerHeight = playerImg.clientHeight;
+            poleHeight = poleImg.clientHeight;
+            gameActive = true;
+            console.log('Game initialized:', { playerHeight, poleHeight });
+        });
 
-    function updatePlayerPosition() {
-      if (!gameActive) return;
+        function updatePlayerPosition() {
+            if (!gameActive) return;
 
-      playerPosition -= gravity;
-      player.style.bottom = `${playerPosition}px`;
+            // Apply gravity
+            playerPosition = Math.max(0, playerPosition - gravity);
+            player.style.bottom = `${playerPosition}px`;
 
-      const poleHeight = pole.clientHeight;
-      const playerTopFromTop = poleHeight - (playerPosition + playerHeight);
+            // Calculate player's top position (from bottom of container)
+            const playerTop = playerPosition + playerHeight;
 
-      // Win condition check
-      if (playerTopFromTop >= flagPositionY) {
-        winGame();
-      }
+            // Win condition: player's top reaches flag position (from top of pole)
+            if ((poleHeight - playerTop) <= flagPositionY) {
+                winGame();
+            }
 
-      // Lose condition check
-      if (playerPosition <= 0) {
-        gameActive = false;
-        new bootstrap.Modal(document.getElementById('alertModal')).show();
-      }
-    }
+            // Lose condition
+            if (playerPosition <= 0) {
+                gameActive = false;
+                new bootstrap.Modal(document.getElementById('alertModal')).show();
+            }
+        }
 
-    function climb() {
-      if (gameActive) {
-        playerPosition += climbPower;
-        player.style.bottom = `${playerPosition}px`;
-      }
-    }
+        function climb() {
+            if (gameActive) {
+                playerPosition += climbPower;
+                player.style.bottom = `${playerPosition}px`;
+            }
+        }
 
-    function winGame() {
-      gameActive = false;
-      new bootstrap.Modal(document.getElementById('winModal')).show();
-    }
+        function winGame() {
+            gameActive = false;
+            new bootstrap.Modal(document.getElementById('winModal')).show();
+            console.log('Player won! Position:', playerPosition);
+        }
 
-    function resetGame() {
-      playerPosition = 20;
-      gameActive = true;
-      player.style.bottom = '20px';
-    }
+        function resetGame() {
+            playerPosition = 20;
+            gameActive = true;
+            player.style.bottom = '20px';
+        }
 
-    // Event listeners
-    climbBtn.addEventListener('mousedown', climb);
-    climbBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      climb();
-    });
+        // Event listeners
+        climbBtn.addEventListener('mousedown', climb);
+        climbBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            climb();
+        });
 
-    // Game loop
-    setInterval(updatePlayerPosition, updateInterval);
-  </script>
+        // Start game loop
+        setInterval(updatePlayerPosition, updateInterval);
+    </script>
 </body>
+
 </html>
