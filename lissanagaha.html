@@ -53,6 +53,11 @@
             background-color: #0b5ed7;
             transform: scale(0.95);
         }
+
+        @keyframes floatY {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(10px); }
+        }
     </style>
 </head>
 <body>
@@ -69,7 +74,8 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title">!</h5>
+                        <h5 class="modal-title">hurray!</h5>
+                        <button type="button" class="btn-close"></button>
                     </div>
                     <div class="modal-body">
                         <p>🎉 You reached the top!</p>
@@ -87,6 +93,7 @@
                 <div class="modal-content">
                     <div class="modal-header bg-danger text-white">
                         <h5 class="modal-title">Ayyo!</h5>
+                        <button type="button" class="btn-close"></button>
                     </div>
                     <div class="modal-body">
                         <p>😢 You slid all the way down!</p>
@@ -104,16 +111,32 @@
         const climber = document.getElementById('climber');
         const pole = document.getElementById('pole');
         const climbBtn = document.getElementById('climbBtn');
-        const winModal = new bootstrap.Modal(document.getElementById('winModal'));
-        const loseModal = new bootstrap.Modal(document.getElementById('loseModal'));
+        
+        // Initialize modals with static backdrop
+        const winModal = new bootstrap.Modal(document.getElementById('winModal'), {
+            backdrop: 'static',
+            keyboard: false
+        });
+        const loseModal = new bootstrap.Modal(document.getElementById('loseModal'), {
+            backdrop: 'static',
+            keyboard: false
+        });
 
-      
+        // Handle modal backdrop click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    window.location.reload();
+                }
+            });
+        });
+
         const config = {
-            gravity: 1,         
-            climbPower: 2,       
-            maxHeight: 5,         
-            startPosition: 0.3,  
-            velocityMultiplier: 0.05 
+            gravity: 0.8,
+            climbPower: 4,
+            maxHeight: 5,
+            startPosition: 0.3,
+            velocityMultiplier: 0.1
         };
 
         let gameState = {
@@ -128,7 +151,6 @@
         };
 
         function initGame() {
-            // Reset game state
             gameState = {
                 ...gameState,
                 isClimbing: false,
@@ -137,11 +159,8 @@
                 hasLost: false
             };
 
-            // Get measurements
             gameState.poleHeight = pole.getBoundingClientRect().height;
             gameState.climberHeight = climber.getBoundingClientRect().height;
-
-            // Set initial position (lower starting point)
             gameState.climbHeight = gameState.poleHeight - 
                                   gameState.climberHeight - 
                                   (gameState.poleHeight * config.startPosition);
@@ -159,15 +178,15 @@
 
         function gameLoop() {
             if (!gameState.hasWon && !gameState.hasLost) {
-                
-                gameState.climbVelocity += gameState.isClimbing ? 
-                    -config.climbPower : 
-                    config.gravity;
+                // Apply forces based on climbing state
+                if (gameState.isClimbing) {
+                    gameState.climbVelocity = -config.climbPower;
+                } else {
+                    gameState.climbVelocity += config.gravity;
+                }
 
-                
                 gameState.climbHeight += gameState.climbVelocity * config.velocityMultiplier;
 
-                // Boundary checks
                 const maxHeight = config.maxHeight;
                 const minHeight = gameState.poleHeight - gameState.climberHeight;
                 gameState.climbHeight = Math.max(maxHeight, Math.min(minHeight, gameState.climbHeight));
@@ -175,7 +194,6 @@
                 updateClimberPosition();
                 checkGameState();
             }
-
             gameState.animationFrameId = requestAnimationFrame(gameLoop);
         }
 
@@ -184,14 +202,12 @@
         }
 
         function checkGameState() {
-            // Stricter win condition
             if (gameState.climbHeight <= config.maxHeight && !gameState.hasWon) {
                 gameState.hasWon = true;
                 winModal.show();
                 climbBtn.disabled = true;
             }
             
-            // lose condition when hitting bottom
             if (gameState.climbHeight >= gameState.poleHeight - gameState.climberHeight && 
                 gameState.climbVelocity > 0 && 
                 !gameState.hasLost) {
@@ -218,10 +234,7 @@
             }
         }
 
-        // Handle window resize
         window.addEventListener('resize', initGame);
-
-        // Initialize game after images load
         Promise.all([
             new Promise(resolve => pole.complete ? resolve() : pole.addEventListener('load', resolve)),
             new Promise(resolve => climber.complete ? resolve() : climber.addEventListener('load', resolve))
