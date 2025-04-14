@@ -1,12 +1,464 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Keta Geseema - Three Cubes Game</title>
- 
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Keta Geseema</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: url('assets/padura.png') no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.3);
+            background-blend-mode: overlay;
+        }
+
+        .game-title {
+            color: #0c0d0d;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+        }
+
+        .score-board {
+            font-size: clamp(1rem, 3vw, 1.2em);
+            margin-bottom: 20px;
+            position: fixed;
+            right: 40px;
+            top: 80px;
+            width: 32px;
+            height: 32px;          
+            z-index: 1000;
+        }
+
+        .cubes-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 50px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 400px;
+            
+        }
+
+        .cube-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            perspective: 500px;
+        }
+
+        @media (min-width: 600px) {
+            .cube-container {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(1rem, 3vw, 1.5em);
+            backface-visibility: hidden;
+            color: #000;
+        }
+
+        /* Cube face positions */
+        .front {
+            transform: translateZ(calc(40px + 0.5 * (100px - 80px)));
+        }
+
+        .back {
+            transform: rotateY(180deg) translateZ(calc(40px + 0.5 * (100px - 80px)));
+        }
+
+        .right {
+            transform: rotateY(90deg) translateZ(calc(40px + 0.5 * (100px - 80px)));
+        }
+
+        .left {
+            transform: rotateY(-90deg) translateZ(calc(40px + 0.5 * (100px - 80px)));
+        }
+
+        .top {
+            transform: rotateX(90deg) translateZ(calc(40px + 0.5 * (100px - 80px)));
+        }
+
+        .bottom {
+            transform: rotateX(-90deg) translateZ(calc(40px + 0.5 * (100px - 80px)));
+        }
+
+        @media (min-width: 600px) {
+            .front {
+                transform: translateZ(50px);
+            }
+
+            .back {
+                transform: rotateY(180deg) translateZ(50px);
+            }
+
+            .right {
+                transform: rotateY(90deg) translateZ(50px);
+            }
+
+            .left {
+                transform: rotateY(-90deg) translateZ(50px);
+            }
+
+            .top {
+                transform: rotateX(90deg) translateZ(50px);
+            }
+
+            .bottom {
+                transform: rotateX(-90deg) translateZ(50px);
+            }
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: clamp(1rem, 3vw, 1.125rem);
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #219a52;
+        }
+
+        /* modal style for both win and try again messages */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 90%;
+            max-width: 300px;
+        }
+
+        .modal-content h2 {
+            font-size: clamp(1.25rem, 4vw, 1.5rem);
+            margin-top: 0;
+        }
+
+        .modal-content p {
+            font-size: clamp(1rem, 3vw, 1.125rem);
+            margin-bottom: 20px;
+        }
+
+        .modal-content button {
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .home-icon {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            width: 32px;
+            height: 32px;
+            background-image: url('home-icon.png');
+            background-size: cover;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .front {
+
+            background: url(assets/cube/dic\ 1.png);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100%;
+            height: 100%;
+
+        }
+
+        .back{
+
+            background: url(assets/cube/dic\ 2.png);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100%;
+            height: 100%;
+        }
+
+        .right{
+            background: url(assets/cube/dic\ 3.png);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100%;
+            height: 100%;
+        }
+
+        .left{
+            background: url(assets/cube/dic\ 4.png);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100%;
+            height: 100%;
+        }
+
+        .top{
+            background: url(assets/cube/dic\ 5.png);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100%;
+            height: 100%;
+
+        }
+
+        .bottom{
+            background: url(assets/cube/dic\ 6.png);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100%;
+            height: 100%;
+        }
+        .floating {
+      animation: floatY 3s ease-in-out infinite alternate;
+    }
+
+        @keyframes floatY {
+      0% {
+        transform: translateY(0px);
+      }
+
+      100% {
+        transform: translateY(10px);
+      }
+    }
+   
+
+    </style>
 </head>
+
 <body>
 
+    <!-- Headline -->
+  <img src="assets/headline.svg" class="floating"
+  style="width: 50%; left: 25%; transform: translateX(-50%); margin-top: -20%;" />
+
+    <div class="home-icon">
+        <a href="index.html"><img src="assets/home.svg" alt=""></a>
+    </div>
+
+
+    <!-- <h1 class="game-title">කැට අතක් ගහමු</h1> -->
+    <!-- Score board element -->
+    <div class="score-board" style="margin-right: 1.5rem;">Attempts: <span id="attemptsDisplay">0</span></div>
+
+
+
+    
+    <div class="cubes-container">
+        <div class="cube-container">
+            <div class="cube" id="cube1">
+                <div class="cube-face front"></div>
+                <div class="cube-face back"></div>
+                <div class="cube-face right"></div>
+                <div class="cube-face left"></div>
+                <div class="cube-face top"></div>
+                <div class="cube-face bottom"></div>
+            </div>
+        </div>
+        <div class="cube-container">
+            <div class="cube" id="cube2">
+                <div class="cube-face front"></div>
+                <div class="cube-face back"></div>
+                <div class="cube-face right"></div>
+                <div class="cube-face left"></div>
+                <div class="cube-face top"></div>
+                <div class="cube-face bottom"></div>
+            </div>
+        </div>
+        <div class="cube-container">
+            <div class="cube" id="cube3">
+                <div class="cube-face front"></div>
+                <div class="cube-face back"></div>
+                <div class="cube-face right"></div>
+                <div class="cube-face left"></div>
+                <div class="cube-face top"></div>
+                <div class="cube-face bottom"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <button id="throwBtn">විසි කරන්න</button>
+
+    <p>
+        කැට තුනම දාපන්... තුනෙන්ම 6 වැටුනොත් උබ දිනුම්....
+    </p>
+
+    <!-- Modal for all game results -->
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <h2 id="resultTitle"></h2>
+            <p id="resultMessage"></p>
+            <button onclick="closeModal()">ආයේ දාමු</button>
+        </div>
+    </div>
+
+    <script>
+        // Global score variable
+        let score = 0;
+
+        // Global attempts variable
+        let attempts = 0;
+
+        // Retrieve DOM elements
+        const cubes = [document.getElementById('cube1'),
+        document.getElementById('cube2'),
+        document.getElementById('cube3')];
+        const throwBtn = document.getElementById('throwBtn');
+        const resultModal = document.getElementById('resultModal');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultMessage = document.getElementById('resultMessage');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const attemptsDisplay = document.getElementById('attemptsDisplay');
+
+        // Generate random rotations (multiples of 90°)
+        function getRandomRotation() {
+            return {
+                x: Math.floor(Math.random() * 4) * 90,
+                y: Math.floor(Math.random() * 4) * 90,
+                z: Math.floor(Math.random() * 4) * 90
+            };
+        }
+
+        // Simulate cube value result.
+        function getCubeValue() {
+            const faceIndex = Math.floor(Math.random() * 6);
+            return parseInt(cubes[0].children[faceIndex].textContent);
+        }
+
+        // Main function to throw cubes
+        function throwCubes() {
+            let results = [];
+            let cubesCompleted = 0;
+
+            // Increment attempts and update the display
+            attempts++;
+            attemptsDisplay.textContent = attempts;
+
+            // Disable button during animation
+            throwBtn.disabled = true;
+
+            cubes.forEach((cube, index) => {
+                const rotations = getRandomRotation();
+                cube.style.transform = `rotateX(${rotations.x}deg) rotateY(${rotations.y}deg) rotateZ(${rotations.z}deg)`;
+
+                // After animation, determine the result
+                setTimeout(() => {
+                    const value = getCubeValue();
+                    results[index] = value;
+                    cubesCompleted++;
+
+                    // Process results once all cubes have finished animating
+                    if (cubesCompleted === cubes.length) {
+                        processResults(results);
+                        // Re-enable button after processing
+                        throwBtn.disabled = false;
+                    }
+                }, 1000);
+            });
+        }
+
+        // Process the results of the cube throw
+        function processResults(results) {
+            if (results.every(val => val === 6)) {
+                // Winning condition, increment score
+                score += 10;
+                // Update the score display
+                scoreDisplay.textContent = score;
+
+                if (score >= 50) {
+                    score = 50; // Cap the score at 50
+                    showResultModal("වාසනාවයි...!", `දින්නා! Your score: ${score}. Maximum score reached! The game will restart soon.`);
+
+                    // Auto-reset game after a short delay
+                    setTimeout(() => {
+                        resetGame();
+                        score = 0;
+                        scoreDisplay.textContent = score;
+                        closeModal();
+                    }, 3000);
+                } else {
+                    showResultModal("වාසනාවයි...!", `දින්නා! Your score: ${score}`);
+                }
+            } else {
+                // Not all cubes show 6; prompt to try again
+                showResultModal("හපොයි..!", "Bad luck බන්.... ආයෙ ගහපන්....");
+            }
+        }
+
+        // Display the result modal with a title and message
+        function showResultModal(title, message) {
+            resultTitle.textContent = title;
+            resultMessage.textContent = message;
+            resultModal.style.display = 'flex';
+        }
+
+        // Close the modal
+        function closeModal() {
+            resultModal.style.display = 'none';
+        }
+
+        // Reset cube positions (visual reset)
+        function resetGame() {
+            cubes.forEach(cube => {
+                cube.style.transform = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)';
+            });
+        }
+
+        throwBtn.addEventListener('click', throwCubes);
+    </script>
 </body>
+
 </html>

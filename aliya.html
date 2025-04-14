@@ -1,17 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Aliyata Asa Thabima</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: url('assets/background-01.svg') no-repeat center center fixed;
+      background-size: cover;
+      overflow: hidden;
+      background-color: rgba(255, 255, 255, 0.3);
+      background-blend-mode: overlay;
+    }
 
+    .game-container {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      aspect-ratio: 3 / 2; /* Maintain aspect ratio */
+      background: url('assets/elephant.svg') no-repeat center center;
+      background-size: contain;
+      overflow: hidden;
+    }
+
+    #dot {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 50%;
+      top: 0;
+      left: 0;
+    }
+
+    .home-icon {
+      position: fixed;
+      right: 20px;
+      top: 20px;
+      width: 32px;
+      height: 32px;
+      background-image: url('home-icon.png');
+      background-size: cover;
+      cursor: pointer;
+      z-index: 1000;
+    }
+  </style>
 </head>
 
-<body class="bg-light">
+<body>
+  <div class="home-icon">
+    <a href="index.html"><img src="assets/home.svg" alt=""></a>
+  </div>
+
+  <div class="container my-4">
+    <h1 class="text-center">Aliyata Asa Thabima</h1>
+    <p class="text-center">Click the button when the moving dot is at the elephant’s eye.</p>
+  </div>
+
+  <!-- Game Container -->
+  <div class="container d-flex justify-content-center">
+    <div class="game-container">
+      <div id="dot"></div>
+    </div>
+  </div>
+
+  <!-- Button -->
+  <div class="container text-center my-4">
+    <button id="checkBtn" class="btn btn-primary btn-lg">ඇහැ තබන්න</button>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content border-success">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title" id="successModalLabel">Congratulations!</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          You have fixed the elephant's eye perfectly!
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" id="playAgainBtn">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Failure Modal -->
+  <div class="modal fade" id="failureModal" tabindex="-1" aria-labelledby="failureModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content border-danger">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="failureModalLabel">Try Again!</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="failureMessage">
+          <!-- Message will be dynamically updated -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" id="tryAgainBtn">Try Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const container = document.querySelector('.game-container');
+    const dot = document.getElementById('dot');
+    const checkBtn = document.getElementById('checkBtn');
+    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    const failureModal = new bootstrap.Modal(document.getElementById('failureModal'));
+    const failureMessage = document.getElementById('failureMessage');
+    const playAgainBtn = document.getElementById('playAgainBtn');
+    const tryAgainBtn = document.getElementById('tryAgainBtn');
+
+    let pos = { x: 0, y: 0 };
+    let velocity = { x: 2, y: 1.5 };
+
+    // Dynamically calculate the target position (elephant's eye)
+    function getTargetPosition() {
+      const containerRect = container.getBoundingClientRect();
+      const targetX = containerRect.width * 0.27; //
+      const targetY = containerRect.height * 0.325; 
+      return { x: targetX, y: targetY }; // Return the calculated position
+    }
 
 
+        // // Debugging: Log target position as percentages
+    // container.addEventListener('click', (event) => {
+    //   const containerRect = container.getBoundingClientRect();
+    //   const x = event.clientX - containerRect.left;
+    //   const y = event.clientY - containerRect.top;
+
+    //   const xPercentage = x / containerRect.width;
+    //   const yPercentage = y / containerRect.height;
+
+    //   console.log(`Target Position: x=${x}, y=${y}`);
+    //   console.log(`Target Position as Percentage: x=${xPercentage}, y=${yPercentage}`);
+    // });
+
+    function getContainerDimensions() {
+      return container.getBoundingClientRect();
+    }
+
+    function animateDot() {
+      const rect = getContainerDimensions();
+      const containerWidth = rect.width;
+      const containerHeight = rect.height;
+
+      pos.x += velocity.x;
+      pos.y += velocity.y;
+
+      if (pos.x <= 0 || pos.x >= containerWidth - dot.offsetWidth) {
+        velocity.x *= -1;
+      }
+
+      if (pos.y <= 0 || pos.y >= containerHeight - dot.offsetHeight) {
+        velocity.y *= -1;
+      }
+
+      dot.style.left = pos.x + 'px';
+      dot.style.top = pos.y + 'px';
+
+      requestAnimationFrame(animateDot);
+    }
+
+    animateDot();
+
+    function calculateDistance(p1, p2) {
+      return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+    }
+
+    checkBtn.addEventListener('click', () => {
+      const dotRect = dot.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const dotPos = {
+        x: dotRect.left - containerRect.left + dotRect.width / 2,
+        y: dotRect.top - containerRect.top + dotRect.height / 2,
+      };
+
+      const target = getTargetPosition();
+      const distance = calculateDistance(dotPos, target);
+
+      const perfectThreshold = 10;
+      const nearThreshold = 30;
+
+      if (distance <= perfectThreshold) {
+        successModal.show();
+      } else {
+        failureMessage.textContent = distance <= nearThreshold ? "ලඟින් ගියා!" : "Try again!";
+        failureModal.show();
+      }
+    });
+
+    playAgainBtn.addEventListener('click', () => {
+      location.reload();
+    });
+
+    tryAgainBtn.addEventListener('click', () => {
+      location.reload();
+    });
+
+    document.getElementById('failureModal').addEventListener('hidden.bs.modal', () => {
+      location.reload();
+    });
+  </script>
 </body>
+
 </html>

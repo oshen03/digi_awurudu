@@ -111,134 +111,142 @@
         const climber = document.getElementById('climber');
         const pole = document.getElementById('pole');
         const climbBtn = document.getElementById('climbBtn');
-        
+      
         // Initialize modals with static backdrop
         const winModal = new bootstrap.Modal(document.getElementById('winModal'), {
-            backdrop: 'static',
-            keyboard: false
+          backdrop: 'static',
+          keyboard: false
         });
         const loseModal = new bootstrap.Modal(document.getElementById('loseModal'), {
-            backdrop: 'static',
-            keyboard: false
+          backdrop: 'static',
+          keyboard: false
         });
-
+      
         // Handle modal backdrop click
         document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    window.location.reload();
-                }
-            });
+          modal.addEventListener('click', function(e) {
+            if (e.target === this) window.location.reload();
+          });
         });
-
+      
         const config = {
-            gravity: 0.8,
-            climbPower: 4,
-            maxHeight: 5,
-            startPosition: 0.3,
-            velocityMultiplier: 0.1
+          gravity: 0.8,
+          climbPower: 4,
+          maxHeight: 5,
+          startPosition: 0.3,
+          velocityMultiplier: 0.1
         };
-
+      
+        // How long each click “climb” lasts (ms)
+        const CLIMB_DURATION = 800;
+      
         let gameState = {
+          isClimbing: false,
+          climbVelocity: 0,
+          climbHeight: 0,
+          poleHeight: 0,
+          climberHeight: 0,
+          hasWon: false,
+          hasLost: false,
+          animationFrameId: null
+        };
+      
+        function initGame() {
+          gameState = {
+            ...gameState,
             isClimbing: false,
             climbVelocity: 0,
-            climbHeight: 0,
-            poleHeight: 0,
-            climberHeight: 0,
             hasWon: false,
-            hasLost: false,
-            animationFrameId: null
-        };
-
-        function initGame() {
-            gameState = {
-                ...gameState,
-                isClimbing: false,
-                climbVelocity: 0,
-                hasWon: false,
-                hasLost: false
-            };
-
-            gameState.poleHeight = pole.getBoundingClientRect().height;
-            gameState.climberHeight = climber.getBoundingClientRect().height;
-            gameState.climbHeight = gameState.poleHeight - 
-                                  gameState.climberHeight - 
+            hasLost: false
+          };
+      
+          // measure
+          gameState.poleHeight = pole.getBoundingClientRect().height;
+          gameState.climberHeight = climber.getBoundingClientRect().height;
+          gameState.climbHeight = gameState.poleHeight -
+                                  gameState.climberHeight -
                                   (gameState.poleHeight * config.startPosition);
-            
-            updateClimberPosition();
-            climbBtn.disabled = false;
-            climbBtn.classList.remove('active');
-            startGameLoop();
+      
+          updateClimberPosition();
+          climbBtn.disabled = false;
+          climbBtn.classList.remove('active');
+          startGameLoop();
         }
-
+      
         function startGameLoop() {
-            cancelAnimationFrame(gameState.animationFrameId);
-            gameLoop();
+          cancelAnimationFrame(gameState.animationFrameId);
+          gameLoop();
         }
-
+      
         function gameLoop() {
-            if (!gameState.hasWon && !gameState.hasLost) {
-                // Apply forces based on climbing state
-                if (gameState.isClimbing) {
-                    gameState.climbVelocity = -config.climbPower;
-                } else {
-                    gameState.climbVelocity += config.gravity;
-                }
-
-                gameState.climbHeight += gameState.climbVelocity * config.velocityMultiplier;
-
-                const maxHeight = config.maxHeight;
-                const minHeight = gameState.poleHeight - gameState.climberHeight;
-                gameState.climbHeight = Math.max(maxHeight, Math.min(minHeight, gameState.climbHeight));
-
-                updateClimberPosition();
-                checkGameState();
+          if (!gameState.hasWon && !gameState.hasLost) {
+            // If in climbing phase, apply climbPower; otherwise apply gravity
+            if (gameState.isClimbing) {
+              gameState.climbVelocity = -config.climbPower;
+            } else {
+              gameState.climbVelocity += config.gravity;
             }
-            gameState.animationFrameId = requestAnimationFrame(gameLoop);
+      
+            gameState.climbHeight += gameState.climbVelocity * config.velocityMultiplier;
+      
+            // clamp between top and bottom
+            const topLimit = config.maxHeight;
+            const bottomLimit = gameState.poleHeight - gameState.climberHeight;
+            gameState.climbHeight = Math.max(topLimit, Math.min(bottomLimit, gameState.climbHeight));
+      
+            updateClimberPosition();
+            checkGameState();
+          }
+      
+          gameState.animationFrameId = requestAnimationFrame(gameLoop);
         }
-
+      
         function updateClimberPosition() {
-            climber.style.top = `${gameState.climbHeight}px`;
+          climber.style.top = `${gameState.climbHeight}px`;
         }
-
+      
         function checkGameState() {
-            if (gameState.climbHeight <= config.maxHeight && !gameState.hasWon) {
-                gameState.hasWon = true;
-                winModal.show();
-                climbBtn.disabled = true;
-            }
-            
-            if (gameState.climbHeight >= gameState.poleHeight - gameState.climberHeight && 
-                gameState.climbVelocity > 0 && 
-                !gameState.hasLost) {
-                gameState.hasLost = true;
-                loseModal.show();
-                climbBtn.disabled = true;
-            }
+          // Win if at top
+          if (gameState.climbHeight <= config.maxHeight && !gameState.hasWon) {
+            gameState.hasWon = true;
+            winModal.show();
+            climbBtn.disabled = true;
+          }
+          // Lose if at bottom and falling
+          if (
+            gameState.climbHeight >= gameState.poleHeight - gameState.climberHeight &&
+            gameState.climbVelocity > 0 &&
+            !gameState.hasLost
+          ) {
+            gameState.hasLost = true;
+            loseModal.show();
+            climbBtn.disabled = true;
+          }
         }
-
-        // Event handlers
-        climbBtn.addEventListener('mousedown', () => toggleClimbing(true));
-        climbBtn.addEventListener('mouseup', () => toggleClimbing(false));
-        climbBtn.addEventListener('mouseleave', () => toggleClimbing(false));
-        climbBtn.addEventListener('touchstart', e => {
-            e.preventDefault();
-            toggleClimbing(true);
+      
+        // Replace hold-based handlers with click toggle
+        climbBtn.addEventListener('click', () => {
+          if (gameState.hasWon || gameState.hasLost) return;
+      
+          // start climb
+          gameState.isClimbing = true;
+          climbBtn.classList.add('active');
+      
+          // after CLIMB_DURATION, stop climbing
+          setTimeout(() => {
+            gameState.isClimbing = false;
+            climbBtn.classList.remove('active');
+          }, CLIMB_DURATION);
         });
-        climbBtn.addEventListener('touchend', () => toggleClimbing(false));
-
-        function toggleClimbing(climbing) {
-            if (!gameState.hasWon && !gameState.hasLost) {
-                gameState.isClimbing = climbing;
-                climbBtn.classList.toggle('active', climbing);
-            }
-        }
-
+      
         window.addEventListener('resize', initGame);
+      
+        // wait for images then init
         Promise.all([
-            new Promise(resolve => pole.complete ? resolve() : pole.addEventListener('load', resolve)),
-            new Promise(resolve => climber.complete ? resolve() : climber.addEventListener('load', resolve))
+          new Promise(res => pole.complete ? res() : pole.addEventListener('load', res)),
+          new Promise(res => climber.complete ? res() : climber.addEventListener('load', res))
         ]).then(initGame);
-    </script>
+      </script>
+      
 </body>
 </html>
