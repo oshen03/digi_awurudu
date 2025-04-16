@@ -13,7 +13,7 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            background: url('assets/background-01.svg') no-repeat center center fixed;
+            background: url('assets/grees.jpg') no-repeat center center fixed;
             background-size: cover;
             background-color: rgba(255, 255, 255, 0.3);
             background-blend-mode: overlay;
@@ -54,20 +54,50 @@
             transform: scale(0.95);
         }
 
-        @keyframes floatY {
-            0% { transform: translateY(0px); }
-            100% { transform: translateY(10px); }
+        .home-icon {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            width: 32px;
+            height: 32px;
+            background-image: url('home-icon.png');
+            background-size: cover;
+            cursor: pointer;
+            z-index: 1000;
         }
+
+        
+        .floating {
+      animation: floatY 3s ease-in-out infinite alternate;
+    }
+
+        @keyframes floatY {
+      0% {
+        transform: translateY(0px);
+      }
+
+      100% {
+        transform: translateY(10px);
+      }
+    }
     </style>
 </head>
 <body>
+      <!-- Headline -->
+      <img src="assets/headline.svg" class="floating img-fluid col-md-12"
+      style="width: 10%; left: 25%; transform: translateX(-50%); " />
+
+      <div class="home-icon">
+        <a href="index.html"><img src="assets/home.svg" alt=""></a>
+    </div>
+
     <div class="container text-center">
         <h1 class="my-4">Lissana gahe nageema</h1>
         <div class="game-container" id="game">
             <img src="assets/pole.svg" id="pole" alt="pole">
             <img src="assets/climber.svg" id="climber" alt="climber">
         </div>
-        <button class="btn btn-lg btn-primary mt-3" id="climbBtn">Climb</button>
+        <button class="btn btn-lg btn-primary mt-3 w-50" id="climbBtn">Climb</button>
 
         <!-- Win Modal -->
         <div class="modal fade" id="winModal" tabindex="-1">
