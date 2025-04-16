@@ -1,47 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Kana Mutti Bideema</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
       margin: 0;
-      background: url('assets/muttibg.jpg') no-repeat center center fixed;
+      padding: 20px;
+      background: url('assets/muttibg.jpg') no-repeat center center;
       background-size: cover;
-      overflow: hidden;
       background-color: rgba(255, 255, 255, 0.3);
       background-blend-mode: overlay;
+      background-attachment: fixed;
+      overflow: auto;
+    }
+
+    .home-icon {
+      position: fixed;
+      right: 20px;
+      top: 20px;
+      width: 32px;
+      height: 32px;
+      z-index: 1000;
+    }
+
+    .home-icon img {
+      width: 100%;
+      height: auto;
     }
 
     .game-title {
-      font-size: 24px;
-      margin-bottom: 30px;
+      font-size: clamp(18px, 5vw, 24px);
+      margin: 20px 0;
       color: #333;
       text-align: center;
+      width: 100%;
+    }
+
+    .headline {
+      width: 80%;
+      max-width: 400px;
+      margin: 0 auto 20px;
+      animation: floatY 3s ease-in-out infinite alternate;
+    }
+
+    .pots-container {
+      display: flex;
+      justify-content: center;
+      gap: 5vw;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      width: 100%;
+      max-width: 800px;
     }
 
     .pot {
-      width: 100px;
-      height: 120px;
+      width: clamp(80px, 25vw, 120px);
+      height: clamp(96px, 30vw, 144px);
       position: relative;
       cursor: pointer;
       transition: transform 0.2s;
       animation: oscillate 3s infinite ease-in-out;
+      pointer-events: auto;
+      
     }
 
     .pot:hover {
       transform: scale(1.05);
     }
 
-    .pot img.claypot {
+    .pot img {
       width: 100%;
-      height: 100%;
+      height: auto;
       display: block;
     }
 
@@ -49,8 +90,6 @@
       position: absolute;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
       opacity: 0;
       pointer-events: none;
     }
@@ -60,39 +99,16 @@
     }
 
     @keyframes oscillate {
-      0%,
-      100% {
-        transform: translateY(0) rotate(0deg);
-      }
-
-      25% {
-        transform: translateY(-10px) rotate(2deg);
-      }
-
-      50% {
-        transform: translateY(0) rotate(0deg);
-      }
-
-      75% {
-        transform: translateY(-10px) rotate(-2deg);
-      }
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-5px) rotate(2deg); }
+      50% { transform: translateY(0) rotate(0deg); }
+      75% { transform: translateY(-5px) rotate(-2deg); }
     }
 
     @keyframes splash {
-      0% {
-        opacity: 0;
-        transform: scale(0.8);
-      }
-
-      50% {
-        opacity: 1;
-        transform: scale(1.2);
-      }
-
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
+      0% { opacity: 0; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
     }
 
     .modal {
@@ -106,20 +122,23 @@
       z-index: 100;
       justify-content: center;
       align-items: center;
+      padding: 20px;
     }
 
     .modal-content {
       background-color: white;
-      padding: 30px;
+      padding: 20px;
       border-radius: 10px;
       text-align: center;
-      max-width: 300px;
+      max-width: 90%;
+      width: 400px;
       animation: fadeIn 0.3s;
     }
 
     .modal h2 {
       margin-top: 0;
       color: #333;
+      font-size: clamp(20px, 5vw, 24px);
     }
 
     .modal button {
@@ -129,8 +148,10 @@
       padding: 10px 20px;
       border-radius: 5px;
       cursor: pointer;
-      font-size: 16px;
+      font-size: clamp(14px, 4vw, 16px);
       margin-top: 20px;
+      width: 100%;
+      max-width: 200px;
     }
 
     .modal button:hover {
@@ -142,83 +163,69 @@
     }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes floatY {
-      0% {
-        transform: translateY(0px);
-      }
-
-      100% {
-        transform: translateY(10px);
-      }
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(10px); }
     }
 
     .copyright {
-      position: absolute;
+      position: fixed;
       bottom: 10px;
       color: #666;
-      font-size: 12px;
+      font-size: clamp(10px, 3vw, 12px);
+      text-align: center;
+      width: 100%;
     }
 
-    .home-icon {
-      position: fixed;
-      right: 20px;
-      top: 20px;
-      width: 32px;
-      height: 32px;
-      background-image: url('home-icon.png');
-      background-size: cover;
-      cursor: pointer;
-      z-index: 1000;
+    /* Landscape orientation adjustments */
+    @media screen and (max-height: 500px) {
+      .pots-container {
+        margin-bottom: 10px;
+      }
+      .game-title {
+        margin: 10px 0;
+      }
+    }
+
+    /* Very small screens */
+    @media screen and (max-width: 350px) {
+      .pots-container {
+        gap: 10px;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="home-icon">
-    <a href="index.html"><img src="assets/home.svg" alt=""></a>
+    <a href="index.html"><img src="assets/home.svg" alt="Home"></a>
   </div>
-
-  <!-- Headline -->
-  <img src="assets/headline.svg" class="floating mx-auto d-block mt-3" style="width: 50%;" />
+  
+  <img src="assets/headline.svg" class="headline floating" alt="Game Headline">
 
   <div class="game-title">Break the Clay Pot with the Water</div>
 
-  <!-- Pots Container -->
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-4 col-md-3 text-center">
-        <div class="pot" data-pot="1">
-          <img src="assets/claypot.svg" alt="Clay Pot" class="claypot">
-          <img src="assets/splash.svg" alt="Splash" class="splash">
-        </div>
-      </div>
-      <div class="col-4 col-md-3 text-center">
-        <div class="pot" data-pot="2">
-          <img src="assets/claypot.svg" alt="Clay Pot" class="claypot">
-          <img src="assets/splash.svg" alt="Splash" class="splash">
-        </div>
-      </div>
-      <div class="col-4 col-md-3 text-center">
-        <div class="pot" data-pot="3">
-          <img src="assets/claypot.svg" alt="Clay Pot" class="claypot">
-          <img src="assets/splash.svg" alt="Splash" class="splash">
-        </div>
-      </div>
+  <div class="pots-container">
+    <div class="pot" data-pot="1">
+      <img src="assets/claypot.svg" alt="Clay Pot" class="claypot">
+      <img src="assets/splash.svg" alt="Splash" class="splash">
+    </div>
+    <div class="pot" data-pot="2">
+      <img src="assets/claypot.svg" alt="Clay Pot" class="claypot">
+      <img src="assets/splash.svg" alt="Splash" class="splash">
+    </div>
+    <div class="pot" data-pot="3">
+      <img src="assets/claypot.svg" alt="Clay Pot" class="claypot">
+      <img src="assets/splash.svg" alt="Splash" class="splash">
     </div>
   </div>
 
-  <!-- Modals for win or lose messages -->
+  <div class="copyright">Copyright © Traitgen software solutions.</div>
+
   <div class="modal" id="winModal">
     <div class="modal-content">
       <h2>Congratulations!</h2>
@@ -230,61 +237,49 @@
   <div class="modal" id="loseModal">
     <div class="modal-content">
       <h2>හපොයි!</h2>
-      <p>පොට්ටද😂. ආයෙ බිදහන්!</p>
+      <p>පොට්ට ද. ආයෙ බිදහන්!</p>
       <button onclick="resetGame()">Try Again</button>
     </div>
   </div>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     let correctPot;
     let gameActive = true;
 
-    // Set up the initial game state
     function initGame() {
       document.querySelectorAll('.pot').forEach(pot => {
-        // Reset the pot image to the intact clay pot
         const claypotImg = pot.querySelector('img.claypot');
         claypotImg.src = 'assets/claypot.svg';
 
-        // Hide the splash image
         const splashImg = pot.querySelector('img.splash');
         splashImg.classList.remove('show');
         splashImg.style.opacity = 0;
 
-        // Re-enable clicks
         pot.style.pointerEvents = 'auto';
       });
-      // Randomly choose the pot that contains the water (correct pot)
+      
       correctPot = Math.floor(Math.random() * 3) + 1;
       gameActive = true;
     }
 
-    // Set up event listeners for the pots
     function setupEventListeners() {
       document.querySelectorAll('.pot').forEach(pot => {
         pot.addEventListener('click', function () {
           if (!gameActive) return;
 
           const potNumber = parseInt(this.getAttribute('data-pot'));
-          // Prevent further clicks on this pot
           this.style.pointerEvents = 'none';
 
-          // Change the pot image to the broken clay pot image
           const claypotImg = this.querySelector('img.claypot');
           claypotImg.src = 'assets/claypotbroken.svg';
 
-          // If this is the correct pot, animate the splash image
           if (potNumber === correctPot) {
             const splashImg = this.querySelector('img.splash');
-            // Use a slight delay for visual effect
             setTimeout(() => {
               splashImg.classList.add('show');
             }, 200);
           }
 
-          // After animation delay, show appropriate modal
           setTimeout(() => {
             if (potNumber === correctPot) {
               document.getElementById('winModal').style.display = 'flex';
@@ -298,18 +293,27 @@
       });
     }
 
-    // Reset the game by hiding modals and re-initializing the state
     function resetGame() {
       document.getElementById('winModal').style.display = 'none';
       document.getElementById('loseModal').style.display = 'none';
       initGame();
     }
 
+    // Handle both mouse and touch events
+    function setupTouchEvents() {
+      document.querySelectorAll('.pot').forEach(pot => {
+        pot.addEventListener('touchstart', function(e) {
+          e.preventDefault();
+          this.click();
+        }, { passive: false });
+      });
+    }
+
     window.onload = function () {
       initGame();
       setupEventListeners();
+      setupTouchEvents();
     };
   </script>
 </body>
-
 </html>

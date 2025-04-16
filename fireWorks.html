@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fireworks Display</title>
+    <style>
+        body, html { margin: 0; overflow: hidden; height: 100%; }
+        #sky { position: fixed; width: 100%; height: 100%; background: linear-gradient(to bottom, #000000 0%, #000033 100%); }
+        #launchButton {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            padding: 15px 30px; font-size: 18px; background: #ff4444; color: white;
+            border: none; border-radius: 25px; cursor: pointer; transition: background 0.3s;
+            z-index: 1000;
+        }
+        #launchButton:hover { background: #ff0000; }
+        .star { position: absolute; width: 2px; height: 2px; background: white; border-radius: 50%; z-index: 1; animation: twinkle 2s infinite ease-in-out alternate; }
+        @keyframes twinkle { 0% { opacity: 0.2; } 100% { opacity: 1; } }
+        @keyframes tailFlame { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(10px); opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div id="sky"></div>
+    <button id="launchButton">🚀</button>
+
+    <script>
+        const sky = document.getElementById('sky');
+        const launchButton = document.getElementById('launchButton');
+        
+        // Create random twinkling stars
+        function createStars() {
+            for (let i = 0; i < 250; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.opacity = Math.random();
+                sky.appendChild(star);
+            }
+        }
+
+        // Launch a rocket
+        function launchRocket() {
+            const targetY = window.innerHeight / (2 + Math.random());
+            const rocketCount = Math.random() < 0.5 ? 2 : 3;
+
+            for (let i = 0; i < rocketCount; i++) {
+                const startX = Math.random() * (window.innerWidth - 100) + 50;
+                const container = document.createElement('div');
+                container.style.position = 'absolute';
+                container.style.left = `${startX}px`;
+                container.style.top = `${window.innerHeight}px`;
+                container.style.zIndex = 3;
+
+                const rocket = document.createElement('div');
+                rocket.style.width = '20px';
+                rocket.style.height = '60px';
+                rocket.style.background = 'linear-gradient(to top, #ff3366, #ff99cc)';
+                rocket.style.borderRadius = '10px';
+                rocket.style.transform = 'rotate(180deg)';
+
+                const tail = document.createElement('div');
+                tail.style.position = 'absolute';
+                tail.style.width = '10px';
+                tail.style.height = '50px';
+                tail.style.background = 'linear-gradient(to top, rgba(255,165,0,0.9), transparent)';
+                tail.style.left = '50%';
+                tail.style.bottom = '-50px';
+                tail.style.transform = 'translateX(-50%)';
+                tail.style.animation = 'tailFlame 0.2s infinite alternate';
+                tail.style.filter = 'blur(3px)';
+
+                container.appendChild(rocket);
+                container.appendChild(tail);
+                sky.appendChild(container);
+
+                let currentY = window.innerHeight;
+                function moveRocket() {
+                    currentY -= 10 + Math.random() * 5;
+                    container.style.top = `${currentY}px`;
+                    if (currentY <= targetY) {
+                        createFirework(startX, currentY);
+                        container.remove();
+                    } else {
+                        requestAnimationFrame(moveRocket);
+                    }
+                }
+
+                requestAnimationFrame(moveRocket);
+            }
+        }
+
+        // Create a firework effect
+        function createFirework(x, y, particleCount = 60) {
+            const colors = ['#ff0044', '#00ffcc', '#ffcc00', '#ff66ff', '#00ccff', '#66ff66', '#ff6600'];
+            const textColors = ['#ffffff', '#ffcc00', '#ff66ff', '#66ffff', '#66ff66'];
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                const size = 2 + Math.random() * 4;
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 3 + Math.random() * 6;
+                const vx = Math.cos(angle) * velocity;
+                let vy = Math.sin(angle) * velocity;
+                particle.style.position = 'absolute';
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = 2;
+                particle.style.boxShadow = `0 0 8px ${particle.style.background}`;
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                sky.appendChild(particle);
+
+                let currentX = x, currentY = y, alpha = 1;
+                function animate() {
+                    currentX += vx;
+                    currentY += vy;
+                    vy += 0.12;
+                    alpha -= 0.006;
+
+                    particle.style.left = `${currentX}px`;
+                    particle.style.top = `${currentY}px`;
+                    particle.style.opacity = alpha;
+
+                    if (alpha > 0) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        particle.remove();
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            // Add burst text
+            const text = document.createElement('div');
+            text.innerText = "සුභ නව වසරක් වේවා! 🎉"; 
+            text.style.position = 'absolute';
+            text.style.left = `${x - 80}px`;
+            text.style.top = `${y - 50}px`;
+            text.style.color = textColors[Math.floor(Math.random() * textColors.length)];
+            text.style.fontSize = '26px';
+            text.style.fontWeight = 'bold';
+            text.style.textShadow = '0 0 10px white';
+            text.style.opacity = '1';
+            text.style.transition = 'opacity 2s, transform 2s';
+            text.style.zIndex = 3;
+            text.style.pointerEvents = 'none';
+            sky.appendChild(text);
+
+            setTimeout(() => {
+                text.style.opacity = '0';
+                text.style.transform = 'translateY(-60px)';
+            }, 100);
+
+            setTimeout(() => {
+                text.remove();
+            }, 2100);
+        }
+
+        // Event listeners
+        launchButton.addEventListener('click', launchRocket);
+
+        // Initialize the sky with stars
+        createStars();
+    </script>
+</body>
+</html>

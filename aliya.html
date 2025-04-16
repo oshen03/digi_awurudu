@@ -12,11 +12,10 @@
       height: 100%;
       margin: 0;
       padding: 0;
-      background: url('assets/background-01.svg') no-repeat center center fixed;
+      background: url('assets/wall.png') no-repeat center center fixed;
       background-size: cover;
       overflow: hidden;
-      background-color: rgba(255, 255, 255, 0.3);
-      background-blend-mode: overlay;
+
     }
 
     .game-container {
@@ -24,7 +23,8 @@
       width: 100%;
       max-width: 600px;
       height: auto;
-      aspect-ratio: 3 / 2; /* Maintain aspect ratio */
+      aspect-ratio: 3 / 2;
+      /* Maintain aspect ratio */
       background: url('assets/elephant.svg') no-repeat center center;
       background-size: contain;
       overflow: hidden;
@@ -51,15 +51,33 @@
       cursor: pointer;
       z-index: 1000;
     }
+
+
+    .floating {
+      animation: floatY 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatY {
+      0% {
+        transform: translateY(0px);
+      }
+
+      100% {
+        transform: translateY(10px);
+      }
+    }
   </style>
 </head>
 
 <body>
+
+
+
   <div class="home-icon">
     <a href="index.html"><img src="assets/home.svg" alt=""></a>
   </div>
 
-  <div class="container my-4">
+  <div class="container my-4 mt-5 floating">
     <h1 class="text-center">Aliyata Asa Thabima</h1>
     <p class="text-center">Click the button when the moving dot is at the elephant’s eye.</p>
   </div>
@@ -131,12 +149,12 @@
     function getTargetPosition() {
       const containerRect = container.getBoundingClientRect();
       const targetX = containerRect.width * 0.27; //
-      const targetY = containerRect.height * 0.325; 
+      const targetY = containerRect.height * 0.325;
       return { x: targetX, y: targetY }; // Return the calculated position
     }
 
 
-        // // Debugging: Log target position as percentages
+    // // Debugging: Log target position as percentages
     // container.addEventListener('click', (event) => {
     //   const containerRect = container.getBoundingClientRect();
     //   const x = event.clientX - containerRect.left;
